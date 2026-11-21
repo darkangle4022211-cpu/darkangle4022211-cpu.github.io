@@ -12,6 +12,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500&family=Host+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" type="image/webp" href="./assets/screenshots/search-discover.webp">
+  <link rel="preload" as="image" type="image/webp" href="./assets/screenshots/extension-hub.webp">
+  <link rel="preload" as="image" type="image/webp" href="./assets/screenshots/active-downloads.webp">
+  <link rel="preload" as="image" type="image/webp" href="./assets/screenshots/websites-browser.webp">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -59,14 +63,43 @@
         </div>
 
         <figure class="intro-stage">
-          <div class="screen-well intro-well">
+          <div class="screen-well intro-well stage-frame" id="intro-stage-frame">
             <img
-              id="hero-stage-img"
-              src="./assets/screenshots/search-discover.jpg"
+              class="stage-img is-visible"
+              src="./assets/screenshots/search-discover.webp"
               alt="HyperDrain desktop console displaying Search and Discover catalog filters"
-              width="1024"
-              height="556"
+              width="1920"
+              height="1043"
+              loading="eager"
+              decoding="sync"
               fetchpriority="high"
+            >
+            <img
+              class="stage-img"
+              src="./assets/screenshots/extension-hub.webp"
+              alt="HyperDrain Universal Browser Extension Hub ready to connect Chrome, Brave, Edge, and Firefox"
+              width="1920"
+              height="1043"
+              loading="eager"
+              decoding="sync"
+            >
+            <img
+              class="stage-img"
+              src="./assets/screenshots/active-downloads.webp"
+              alt="HyperDrain Active Downloads console showing 60-second throughput and disk write meters"
+              width="1920"
+              height="1043"
+              loading="eager"
+              decoding="sync"
+            >
+            <img
+              class="stage-img"
+              src="./assets/screenshots/websites-browser.webp"
+              alt="HyperDrain built-in protected Websites browser with custom launcher"
+              width="1920"
+              height="1043"
+              loading="eager"
+              decoding="sync"
             >
           </div>
           <div class="intro-stage-bar" role="tablist" aria-label="Preview screen in hero">
@@ -170,38 +203,46 @@
           </div>
 
           <div class="sticky-stage">
-            <div class="screen-well stage-frame">
+            <div class="screen-well stage-frame" id="workspace-stage-frame">
               <img
                 id="stage-img-0"
                 class="stage-img is-visible"
-                src="./assets/screenshots/extension-hub.jpg"
+                src="./assets/screenshots/extension-hub.webp"
                 alt="HyperDrain Extension Hub with Chrome, Brave, Edge, and Firefox connectors"
-                width="1024"
-                height="556"
+                width="1920"
+                height="1043"
+                loading="eager"
+                decoding="sync"
               >
               <img
                 id="stage-img-1"
                 class="stage-img"
-                src="./assets/screenshots/search-discover.jpg"
+                src="./assets/screenshots/search-discover.webp"
                 alt="HyperDrain Search and Discover catalog with genre and year filters"
-                width="1024"
-                height="556"
+                width="1920"
+                height="1043"
+                loading="eager"
+                decoding="sync"
               >
               <img
                 id="stage-img-2"
                 class="stage-img"
-                src="./assets/screenshots/active-downloads.png"
+                src="./assets/screenshots/active-downloads.webp"
                 alt="HyperDrain Active Downloads view with real-time throughput graph"
-                width="1024"
-                height="556"
+                width="1920"
+                height="1043"
+                loading="eager"
+                decoding="sync"
               >
               <img
                 id="stage-img-3"
                 class="stage-img"
-                src="./assets/screenshots/websites-browser.png"
+                src="./assets/screenshots/websites-browser.webp"
                 alt="HyperDrain built-in Websites browser view with URL bar and custom site launcher"
-                width="1024"
-                height="556"
+                width="1920"
+                height="1043"
+                loading="eager"
+                decoding="sync"
               >
             </div>
             <p class="caption" id="stage-caption">Universal Browser Extension Hub connecting Chrome, Brave, Edge, and Firefox.</p>

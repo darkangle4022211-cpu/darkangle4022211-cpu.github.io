@@ -6,22 +6,22 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const HERO_SCREENS = [
   {
-    src: "./assets/screenshots/search-discover.jpg",
+    src: "./assets/screenshots/search-discover.webp",
     alt: "HyperDrain desktop console displaying Search and Discover catalog filters",
     caption: "Filter catalogs by genre, year, and rating inside HyperDrain."
   },
   {
-    src: "./assets/screenshots/extension-hub.jpg",
+    src: "./assets/screenshots/extension-hub.webp",
     alt: "HyperDrain Universal Browser Extension Hub ready to connect Chrome, Brave, Edge, and Firefox",
     caption: "One-click browser extension relays authenticated links to desktop."
   },
   {
-    src: "./assets/screenshots/active-downloads.png",
+    src: "./assets/screenshots/active-downloads.webp",
     alt: "HyperDrain Active Downloads console showing 60-second throughput and disk write meters",
     caption: "Live 60-second throughput graph and disk write rate."
   },
   {
-    src: "./assets/screenshots/websites-browser.png",
+    src: "./assets/screenshots/websites-browser.webp",
     alt: "HyperDrain built-in protected Websites browser with custom launcher",
     caption: "Isolated Websites browser detects HLS playlists and MP4 streams."
   }
@@ -261,22 +261,32 @@ async function loadReleases(force = false) {
   }
 }
 
+// Pre-decode all stacked stage images for 0ms instant tab switches
+function warmStageImages() {
+  document.querySelectorAll(".stage-img").forEach((img) => {
+    if (img.decode) {
+      img.decode().catch(() => {});
+    }
+  });
+}
+
 // Hero Stage Quick-Switcher
-const heroStageImg = document.getElementById("hero-stage-img");
+const heroStageImgs = Array.from(document.querySelectorAll("#intro-stage-frame .stage-img"));
 const heroStageCaption = document.getElementById("hero-stage-caption");
 const heroStageBtns = Array.from(document.querySelectorAll("[data-hero-screen]"));
 heroStageBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     const idx = Number(btn.getAttribute("data-hero-screen"));
     const item = HERO_SCREENS[idx];
-    if (!item || !heroStageImg || !heroStageCaption) return;
+    if (!item || !heroStageImgs.length || !heroStageCaption) return;
     heroStageBtns.forEach((b, i) => {
       const active = i === idx;
       b.classList.toggle("is-active", active);
       b.setAttribute("aria-selected", active ? "true" : "false");
     });
-    heroStageImg.src = item.src;
-    heroStageImg.alt = item.alt;
+    heroStageImgs.forEach((img, i) => {
+      img.classList.toggle("is-visible", i === idx);
+    });
     heroStageCaption.textContent = item.caption;
   });
 });
@@ -308,7 +318,7 @@ scenarioBtns.forEach((btn) => {
 // Workspace Tab & Walkthrough Switcher
 const stepItems = Array.from(document.querySelectorAll(".moment-item"));
 const stepButtons = Array.from(document.querySelectorAll(".moment-step"));
-const stageImages = Array.from(document.querySelectorAll(".stage-img"));
+const stageImages = Array.from(document.querySelectorAll("#workspace-stage-frame .stage-img"));
 const stageCaption = document.getElementById("stage-caption");
 let activeScreen = 0;
 
@@ -473,5 +483,6 @@ if (reviewForm) {
   });
 }
 
+warmStageImages();
 loadReleases(false);
 loadReviews();
