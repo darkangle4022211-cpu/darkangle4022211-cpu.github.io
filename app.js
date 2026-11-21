@@ -1,15 +1,65 @@
 const REPO = "darkangle4022211-cpu/hyperdrain";
 const RELEASES_API = `https://api.github.com/repos/${REPO}/releases?per_page=30`;
 const REVIEWS_API = `https://api.github.com/repos/${REPO}/issues?labels=review&state=all&per_page=20`;
-const CACHE_KEY = "hyperdrain_releases_cache_v2";
+const CACHE_KEY = "hyperdrain_releases_cache_v3";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
-const SCREEN_CAPTIONS = [
-  "Active Downloads console with 60-second throughput and disk telemetry.",
+const HERO_SCREENS = [
+  {
+    src: "./assets/screenshots/search-discover.jpg",
+    alt: "HyperDrain desktop console displaying Search and Discover catalog filters",
+    caption: "Filter catalogs by genre, year, and rating inside HyperDrain."
+  },
+  {
+    src: "./assets/screenshots/extension-hub.jpg",
+    alt: "HyperDrain Universal Browser Extension Hub ready to connect Chrome, Brave, Edge, and Firefox",
+    caption: "One-click browser extension relays authenticated links to desktop."
+  },
+  {
+    src: "./assets/screenshots/active-downloads.png",
+    alt: "HyperDrain Active Downloads console showing 60-second throughput and disk write meters",
+    caption: "Live 60-second throughput graph and disk write rate."
+  },
+  {
+    src: "./assets/screenshots/websites-browser.png",
+    alt: "HyperDrain built-in protected Websites browser with custom launcher",
+    caption: "Isolated Websites browser detects HLS playlists and MP4 streams."
+  }
+];
+
+const WORKSPACE_CAPTIONS = [
   "Universal Browser Extension Hub connecting Chrome, Brave, Edge, and Firefox.",
   "Search and Discover catalog with category, genre, year, and rating filters.",
+  "Active Downloads console with 60-second throughput and disk telemetry.",
   "Built-in Websites browser view with stream detection and custom shortcuts."
 ];
+
+const BENCH_SCENARIOS = {
+  congested: {
+    browserStat: "1 socket",
+    browserMeter: 0.12,
+    browserNote: "Single TCP stream; copies temp chunks after finish.",
+    hdStat: "32 WriteAt sockets",
+    hdMeter: 1,
+    hdNote: "Concurrent byte-range workers with instant fallocate pre-allocation."
+  },
+  dropout: {
+    browserStat: "Restarts on drop",
+    browserMeter: 0.08,
+    browserNote: "Wi-Fi drops stall sockets past server keepalive limits.",
+    hdStat: "10 s WAL resume",
+    hdMeter: 1,
+    hdNote: "SQLite WAL checkpoints every chunk while 10 s watchdog rotates workers."
+  },
+  expiring: {
+    browserStat: "HTTP 403 abort",
+    browserMeter: 0.05,
+    browserNote: "Signed CDN links expire mid-transfer and lose temp buffers.",
+    hdStat: "Manifest V3 relay",
+    hdMeter: 1,
+    hdNote: "Extension relays fresh cookies and headers over local IPC."
+  }
+};
 
 function formatBytes(bytes) {
   if (!bytes || bytes <= 0) return "";
@@ -104,14 +154,13 @@ function renderReleases(releases, statusLabel) {
   if (!Array.isArray(releases) || !releases.length) return;
   allReleasesCache = releases;
   const latest = releases[0];
-  const tag = latest.tag_name || "v1.0.9";
+  const tag = latest.tag_name || "v1.1.0";
   const dateStr = formatDate(latest.published_at);
   const assets = getInstallableAssets(latest);
 
-  const headerPill = document.getElementById("header-version-pill");
+  const headerDownloadBtn = document.getElementById("header-download-btn");
   const allReleasesBtn = document.getElementById("hero-all-releases-btn");
   const heroBtn = document.getElementById("primary-download-btn");
-  const closeBtn = document.getElementById("close-download-btn");
   const heroAssetMeta = document.getElementById("hero-asset-meta");
   const latestTagDisplay = document.getElementById("latest-tag-display");
   const latestDateDisplay = document.getElementById("latest-date-display");
@@ -121,7 +170,7 @@ function renderReleases(releases, statusLabel) {
   const terminalLabel = document.getElementById("terminal-label");
   const reviewEnv = document.getElementById("review-env");
 
-  if (headerPill) headerPill.textContent = tag;
+  if (headerDownloadBtn) headerDownloadBtn.textContent = `Get ${tag}`;
   if (allReleasesBtn) allReleasesBtn.textContent = `All releases (${releases.length})`;
   if (latestTagDisplay) latestTagDisplay.textContent = tag;
   if (latestDateDisplay) latestDateDisplay.textContent = dateStr;
@@ -134,12 +183,11 @@ function renderReleases(releases, statusLabel) {
     const primaryInfo = classifyAsset(primary.name);
     const sizeText = formatBytes(primary.size);
 
-    [heroBtn, closeBtn].forEach((btn) => {
-      if (!btn) return;
-      btn.href = primary.browser_download_url;
-      btn.setAttribute("download", primary.name);
-      btn.innerHTML = `Download <span class="measured">${escapeHtml(tag)} (${escapeHtml(primaryInfo.label)})</span>`;
-    });
+    if (heroBtn) {
+      heroBtn.href = primary.browser_download_url;
+      heroBtn.setAttribute("download", primary.name);
+      heroBtn.textContent = `Download ${primaryInfo.label}`;
+    }
 
     if (heroAssetMeta) {
       heroAssetMeta.textContent = sizeText ? `${primary.name} (${sizeText})` : primary.name;
@@ -209,11 +257,55 @@ async function loadReleases(force = false) {
       renderReleases(published, "live");
     }
   } catch {
-    if (syncEl) syncEl.textContent = "v1.0.9 cached";
+    if (syncEl) syncEl.textContent = "v1.1.0 cached";
   }
 }
 
-// 4-Screen Pinned Walkthrough + Tab Switcher
+// Hero Stage Quick-Switcher
+const heroStageImg = document.getElementById("hero-stage-img");
+const heroStageCaption = document.getElementById("hero-stage-caption");
+const heroStageBtns = Array.from(document.querySelectorAll("[data-hero-screen]"));
+heroStageBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const idx = Number(btn.getAttribute("data-hero-screen"));
+    const item = HERO_SCREENS[idx];
+    if (!item || !heroStageImg || !heroStageCaption) return;
+    heroStageBtns.forEach((b, i) => {
+      const active = i === idx;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    heroStageImg.src = item.src;
+    heroStageImg.alt = item.alt;
+    heroStageCaption.textContent = item.caption;
+  });
+});
+
+// Interactive 32-Stream Scenario Bench
+const scenarioBtns = Array.from(document.querySelectorAll("[data-scenario]"));
+const benchBrowserStat = document.getElementById("bench-browser-stat");
+const benchBrowserMeter = document.getElementById("bench-browser-meter");
+const benchBrowserNote = document.getElementById("bench-browser-note");
+const benchHdStat = document.getElementById("bench-hd-stat");
+const benchHdMeter = document.getElementById("bench-hd-meter");
+const benchHdNote = document.getElementById("bench-hd-note");
+
+scenarioBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const key = btn.getAttribute("data-scenario");
+    const sc = BENCH_SCENARIOS[key];
+    if (!sc) return;
+    scenarioBtns.forEach((b) => b.setAttribute("aria-selected", b === btn ? "true" : "false"));
+    if (benchBrowserStat) benchBrowserStat.textContent = sc.browserStat;
+    if (benchBrowserMeter) benchBrowserMeter.style.setProperty("--meter", String(sc.browserMeter));
+    if (benchBrowserNote) benchBrowserNote.textContent = sc.browserNote;
+    if (benchHdStat) benchHdStat.textContent = sc.hdStat;
+    if (benchHdMeter) benchHdMeter.style.setProperty("--meter", String(sc.hdMeter));
+    if (benchHdNote) benchHdNote.textContent = sc.hdNote;
+  });
+});
+
+// Workspace Tab & Walkthrough Switcher
 const stepItems = Array.from(document.querySelectorAll(".moment-item"));
 const stepButtons = Array.from(document.querySelectorAll(".moment-step"));
 const stageImages = Array.from(document.querySelectorAll(".stage-img"));
@@ -230,8 +322,8 @@ function selectScreen(index) {
   stageImages.forEach((img, i) => {
     img.classList.toggle("is-visible", i === index);
   });
-  if (stageCaption && SCREEN_CAPTIONS[index]) {
-    stageCaption.textContent = SCREEN_CAPTIONS[index];
+  if (stageCaption && WORKSPACE_CAPTIONS[index]) {
+    stageCaption.textContent = WORKSPACE_CAPTIONS[index];
   }
 }
 
@@ -349,6 +441,7 @@ if (toggleReleasesBtn) {
 }
 
 const reviewForm = document.getElementById("review-form");
+const reviewHelp = document.getElementById("review-form-help");
 if (reviewForm) {
   reviewForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -356,6 +449,11 @@ if (reviewForm) {
     const env = document.getElementById("review-env").value.trim();
     const title = document.getElementById("review-title").value.trim();
     const body = document.getElementById("review-body").value.trim();
+
+    if (!title || !body) {
+      if (reviewHelp) reviewHelp.textContent = "Enter both a summary and comment before opening GitHub.";
+      return;
+    }
 
     const formatted = [
       `**Rating:** ${rating}/5`,
@@ -370,6 +468,7 @@ if (reviewForm) {
       body: formatted
     });
 
+    if (reviewHelp) reviewHelp.textContent = "Prepared a pre-filled issue draft in a new GitHub tab.";
     window.open(`https://github.com/${REPO}/issues/new?${params.toString()}`, "_blank", "noopener,noreferrer");
   });
 }

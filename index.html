@@ -17,120 +17,155 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="nav-shell">
-    <nav class="nav-pill" aria-label="Primary">
+  <header class="site-header">
+    <div class="container header-inner">
       <a class="brand" href="#top" aria-label="HyperDrain home">
         <img src="./assets/icons/hyperdrain.png" alt="" width="24" height="24">
         <span class="brand-name">HyperDrain</span>
       </a>
-      <span class="version-chip measured" id="header-version-pill">v1.1.0</span>
-      <div class="nav-links">
-        <a href="#compare">Compare</a>
-        <a href="#screens">Screens</a>
-        <a href="#releases">Releases</a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#throughput">Engine</a>
+        <a href="#workspaces">Workspaces</a>
+        <a href="#releases">Installers</a>
         <a href="#reviews">Reviews</a>
-        <a href="https://github.com/darkangle4022211-cpu/hyperdrain" target="_blank" rel="noopener noreferrer">Source</a>
-      </div>
-    </nav>
+        <a href="https://github.com/darkangle4022211-cpu/hyperdrain" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+
+      <a class="btn btn--small" id="header-download-btn" href="#releases">Get v1.1.0</a>
+    </div>
   </header>
 
   <main id="main">
     <section id="top" class="hero">
-      <div class="container hero-grid">
-        <div class="hero-copy">
-          <h1>Fast downloads on slow links</h1>
-          <p class="lead">Thirty-two parallel streams keep multi-gigabyte transfers moving when connections drop.</p>
+      <div class="container intro-grid">
+        <div class="intro-copy">
+          <h1>Fast downloads on unstable links.</h1>
+          <p class="lead">Thirty-two streams keep large transfers moving across drops.</p>
 
-          <div class="hero-actions" id="hero-download-actions">
+          <div class="intro-actions" id="hero-download-actions">
             <a
               class="btn btn--primary"
               id="primary-download-btn"
               href="https://github.com/darkangle4022211-cpu/hyperdrain/releases/download/v1.1.0/HyperDrain-1.1.0.AppImage"
               download="HyperDrain-1.1.0.AppImage"
-            >
-              Download <span class="measured" id="hero-btn-version">v1.1.0 (AppImage)</span>
-            </a>
-            <a class="btn" href="#releases" id="hero-all-releases-btn">All releases (10)</a>
+            >Download AppImage</a>
+            <a class="btn" href="#releases" id="hero-all-releases-btn">All releases</a>
           </div>
 
-          <p class="hero-note">
-            <span class="measured" id="hero-asset-meta">HyperDrain-1.1.0.AppImage (145.9 MB)</span> downloads from GitHub CDN. Extension Hub then handles 32-stream capture.
+          <p class="intro-note">
+            <span class="measured" id="hero-asset-meta">HyperDrain-1.1.0.AppImage (145.9 MB)</span> for Linux x64.
           </p>
         </div>
 
-        <figure class="hero-stage">
-          <div class="screen-well">
+        <figure class="intro-stage">
+          <div class="screen-well intro-well">
             <img
-              src="./assets/screenshots/active-downloads.png"
-              alt="HyperDrain Active Downloads console showing real-time network speed, disk write rate, and stream status"
+              id="hero-stage-img"
+              src="./assets/screenshots/search-discover.jpg"
+              alt="HyperDrain desktop console displaying Search and Discover catalog filters"
               width="1024"
               height="556"
               fetchpriority="high"
             >
           </div>
-          <figcaption class="caption">Active Downloads with throughput graph and disk write meter.</figcaption>
+          <div class="intro-stage-bar" role="tablist" aria-label="Preview screen in hero">
+            <button type="button" class="stage-switch is-active" role="tab" aria-selected="true" data-hero-screen="0">Catalog</button>
+            <button type="button" class="stage-switch" role="tab" aria-selected="false" data-hero-screen="1">Extensions</button>
+            <button type="button" class="stage-switch" role="tab" aria-selected="false" data-hero-screen="2">Transfers</button>
+            <button type="button" class="stage-switch" role="tab" aria-selected="false" data-hero-screen="3">Browser</button>
+          </div>
+          <figcaption class="caption" id="hero-stage-caption">Browse catalogs by genre and rating inside HyperDrain.</figcaption>
         </figure>
       </div>
     </section>
 
-    <section id="compare" class="section section--band">
+    <section id="throughput" class="section section--band">
       <div class="container">
-        <div class="section-head">
-          <h2>Why single streams stall</h2>
-          <p class="lead">Browsers rely on one socket. HyperDrain writes thirty-two ranges directly to disk.</p>
+        <div class="section-head split-head">
+          <div>
+            <h2>Thirty-two streams vs. one</h2>
+            <p class="lead">Compare parallel WriteAt transfers against single-socket browsers.</p>
+          </div>
+          <div class="seg" role="tablist" aria-label="Transfer condition scenarios">
+            <button type="button" role="tab" aria-selected="true" data-scenario="congested">Congested</button>
+            <button type="button" role="tab" aria-selected="false" data-scenario="dropout">Dropouts</button>
+            <button type="button" role="tab" aria-selected="false" data-scenario="expiring">Expiring URL</button>
+          </div>
         </div>
 
-        <div class="diff-panel" role="region" aria-label="Browser download versus HyperDrain comparison">
-          <div class="diff-col">
-            <div class="diff-col-head">Standard browser</div>
-            <ul class="diff-list">
-              <li class="row--minus"><span class="gutter" aria-hidden="true">-</span><span>Single TCP stream throttles on congested routes</span></li>
-              <li class="row--minus"><span class="gutter" aria-hidden="true">-</span><span>Parts copied and merged after completion</span></li>
-              <li class="row--minus"><span class="gutter" aria-hidden="true">-</span><span>Silent stalls on brief Wi-Fi dropouts</span></li>
-              <li class="row--minus"><span class="gutter" aria-hidden="true">-</span><span>Expiring headers force HTTP 403 restarts</span></li>
-            </ul>
+        <div class="panels bench-grid" role="region" aria-live="polite" aria-label="Architecture comparison">
+          <div class="bench-pane">
+            <div class="bench-head">
+              <span>Standard browser</span>
+              <span class="measured bench-val" id="bench-browser-stat">1 socket</span>
+            </div>
+            <div class="meter meter--cool" aria-hidden="true">
+              <span id="bench-browser-meter" style="--meter: 0.12;"></span>
+            </div>
+            <p class="bench-note" id="bench-browser-note">Single TCP socket; copies partial temp chunks on finish.</p>
           </div>
 
-          <div class="diff-col">
-            <div class="diff-col-head">HyperDrain engine</div>
-            <ul class="diff-list">
-              <li class="row--plus"><span class="gutter" aria-hidden="true">+</span><span><span class="measured">32</span> concurrent <span class="measured">WriteAt</span> streams</span></li>
-              <li class="row--plus"><span class="gutter" aria-hidden="true">+</span><span>Instant <span class="measured">fallocate</span> reservation, zero merge</span></li>
-              <li class="row--plus"><span class="gutter" aria-hidden="true">+</span><span><span class="measured">10 s</span> watchdog with SQLite WAL resume</span></li>
-              <li class="row--plus"><span class="gutter" aria-hidden="true">+</span><span>Manifest V3 cookie and header relay</span></li>
-            </ul>
+          <div class="bench-pane">
+            <div class="bench-head">
+              <span>HyperDrain engine</span>
+              <span class="measured bench-val is-accent" id="bench-hd-stat">32 WriteAt sockets</span>
+            </div>
+            <div class="meter meter--accent" aria-hidden="true">
+              <span id="bench-hd-meter" style="--meter: 1;"></span>
+            </div>
+            <p class="bench-note" id="bench-hd-note">Concurrent byte ranges with instant fallocate reservation.</p>
+          </div>
+
+          <div class="bench-ledger">
+            <div class="ledger-cell">
+              <span class="ledger-key">Allocation</span>
+              <span class="measured ledger-data">fallocate</span>
+            </div>
+            <div class="ledger-cell">
+              <span class="ledger-key">Watchdog</span>
+              <span class="measured ledger-data">10 s timeout</span>
+            </div>
+            <div class="ledger-cell">
+              <span class="ledger-key">Resume state</span>
+              <span class="measured ledger-data">SQLite WAL</span>
+            </div>
+            <div class="ledger-cell">
+              <span class="ledger-key">Extension</span>
+              <span class="measured ledger-data">Manifest V3</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="screens" class="section">
+    <section id="workspaces" class="section">
       <div class="container">
         <div class="section-head">
-          <h2>Four views inside one window</h2>
+          <h2>Four workspaces inside one window</h2>
           <p class="lead">Select a workspace to inspect the live interface.</p>
         </div>
 
         <div class="pinned-walkthrough" id="pinned-walkthrough">
           <div class="moment-list" role="tablist" aria-label="HyperDrain workspaces">
             <div class="moment-item is-active" data-screen-index="0">
-              <button type="button" class="moment-step" role="tab" aria-selected="true" data-screen-index="0">Active downloads</button>
-              <p class="moment-desc">Track network speed, disk write rate, and worker streams on a 60-second graph.</p>
+              <button type="button" class="moment-step" role="tab" aria-selected="true" data-screen-index="0">Extension hub</button>
+              <p class="moment-desc">Connect Chrome, Brave, Edge, or Firefox, or export the ZIP archive.</p>
             </div>
 
             <div class="moment-item" data-screen-index="1">
-              <button type="button" class="moment-step" role="tab" aria-selected="false" data-screen-index="1">Extension hub</button>
-              <p class="moment-desc">Connect Chrome, Brave, Edge, or Firefox in one click or export the extension archive.</p>
+              <button type="button" class="moment-step" role="tab" aria-selected="false" data-screen-index="1">Search and discover</button>
+              <p class="moment-desc">Filter catalogs by genre, year, and rating without leaving the app.</p>
             </div>
 
             <div class="moment-item" data-screen-index="2">
-              <button type="button" class="moment-step" role="tab" aria-selected="false" data-screen-index="2">Search and discover</button>
-              <p class="moment-desc">Filter catalogs by category, genre, year, and rating without leaving the app.</p>
+              <button type="button" class="moment-step" role="tab" aria-selected="false" data-screen-index="2">Active downloads</button>
+              <p class="moment-desc">Track network speed, disk write rate, and worker streams live.</p>
             </div>
 
             <div class="moment-item" data-screen-index="3">
               <button type="button" class="moment-step" role="tab" aria-selected="false" data-screen-index="3">Built-in browser</button>
-              <p class="moment-desc">Open web pages in an isolated browser with automatic HLS and MP4 detection.</p>
+              <p class="moment-desc">Open isolated web sessions with automatic HLS and MP4 detection.</p>
             </div>
           </div>
 
@@ -139,24 +174,24 @@
               <img
                 id="stage-img-0"
                 class="stage-img is-visible"
-                src="./assets/screenshots/active-downloads.png"
-                alt="HyperDrain Active Downloads view with real-time throughput graph"
-                width="1024"
-                height="556"
-              >
-              <img
-                id="stage-img-1"
-                class="stage-img"
                 src="./assets/screenshots/extension-hub.jpg"
                 alt="HyperDrain Extension Hub with Chrome, Brave, Edge, and Firefox connectors"
                 width="1024"
                 height="556"
               >
               <img
-                id="stage-img-2"
+                id="stage-img-1"
                 class="stage-img"
                 src="./assets/screenshots/search-discover.jpg"
                 alt="HyperDrain Search and Discover catalog with genre and year filters"
+                width="1024"
+                height="556"
+              >
+              <img
+                id="stage-img-2"
+                class="stage-img"
+                src="./assets/screenshots/active-downloads.png"
+                alt="HyperDrain Active Downloads view with real-time throughput graph"
                 width="1024"
                 height="556"
               >
@@ -169,7 +204,7 @@
                 height="556"
               >
             </div>
-            <p class="caption" id="stage-caption">Active Downloads console with 60-second throughput and disk telemetry.</p>
+            <p class="caption" id="stage-caption">Universal Browser Extension Hub connecting Chrome, Brave, Edge, and Firefox.</p>
           </div>
         </div>
       </div>
@@ -180,7 +215,7 @@
         <div class="releases-header">
           <div class="section-head">
             <h2>Installers and release log</h2>
-            <p class="lead">Auto-synced from GitHub Releases on load.</p>
+            <p class="lead">Synced directly from GitHub Releases.</p>
           </div>
           <div class="sync-bar">
             <span class="measured sync-label" id="releases-sync-status">v1.1.0 synced</span>
@@ -191,8 +226,8 @@
         <div class="platform-split">
           <dl class="req-list">
             <div class="req-row">
-              <dt>Systems</dt>
-              <dd>Ubuntu, Debian, Linux x64</dd>
+              <dt>Target</dt>
+              <dd>Ubuntu and Debian x64</dd>
             </div>
             <div class="req-row">
               <dt>Engine</dt>
@@ -200,7 +235,7 @@
             </div>
             <div class="req-row">
               <dt>Storage</dt>
-              <dd>SQLite WAL, zero telemetry</dd>
+              <dd>SQLite WAL</dd>
             </div>
             <div class="req-row">
               <dt>Wake</dt>
@@ -228,9 +263,9 @@
             </div>
 
             <ul class="notes-list" id="latest-changelog">
-              <li>Built-in protected Websites browser and app launcher</li>
-              <li>Integrated Extension Hub and batch ZIP capture</li>
-              <li>Download-only mode and live proxy bypass sync</li>
+              <li>Protected Websites browser and app launcher</li>
+              <li>Extension Hub and batch ZIP capture</li>
+              <li>Download-only mode and proxy bypass sync</li>
             </ul>
           </div>
         </div>
@@ -279,7 +314,7 @@
             </tbody>
           </table>
           <div class="table-actions">
-            <button type="button" class="btn" id="toggle-all-releases-btn">Show all 10 releases</button>
+            <button type="button" class="btn" id="toggle-all-releases-btn">All 10 releases</button>
           </div>
         </div>
       </div>
@@ -291,7 +326,7 @@
           <div class="review-form-wrap">
             <div class="section-head">
               <h2>Leave a review</h2>
-              <p class="lead">Tried HyperDrain? Share speed or setup feedback below.</p>
+              <p class="lead">Share transfer speed notes on GitHub Issues.</p>
             </div>
 
             <form class="review-form" id="review-form">
@@ -326,6 +361,7 @@
                 <button type="submit" class="btn btn--primary">Post review on GitHub</button>
                 <a class="text-link" href="https://github.com/darkangle4022211-cpu/hyperdrain/issues?q=label%3Areview" target="_blank" rel="noopener noreferrer">All reviews</a>
               </div>
+              <p class="form-help" id="review-form-help" aria-live="polite"></p>
             </form>
           </div>
 
@@ -343,34 +379,6 @@
         </div>
       </div>
     </section>
-
-    <section class="section section--band close-band">
-      <div class="container close-grid">
-        <div class="close-copy">
-          <h2>Ready for faster transfers</h2>
-          <p class="lead">Install the latest Linux build and connect your browser in one click.</p>
-          <div class="hero-actions">
-            <a
-              class="btn btn--primary"
-              id="close-download-btn"
-              href="https://github.com/darkangle4022211-cpu/hyperdrain/releases/download/v1.1.0/HyperDrain-1.1.0.AppImage"
-              download="HyperDrain-1.1.0.AppImage"
-            >
-              Download <span class="measured" id="close-btn-version">v1.1.0 (AppImage)</span>
-            </a>
-            <a class="btn" href="https://github.com/darkangle4022211-cpu/hyperdrain" target="_blank" rel="noopener noreferrer">Source</a>
-          </div>
-        </div>
-        <div class="screen-well close-shot">
-          <img
-            src="./assets/screenshots/extension-hub.jpg"
-            alt="HyperDrain Universal Browser Extension Hub ready to connect Chrome, Brave, Edge, and Firefox"
-            width="1024"
-            height="556"
-          >
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -384,12 +392,10 @@
       </div>
 
       <div class="footer-links-row">
-        <a href="#compare">Comparison</a>
-        <a href="#screens">Workspaces</a>
-        <a href="#releases">Installers</a>
+        <a href="https://darkangle4022211-cpu.github.io/pulsar-audio/" target="_blank" rel="noopener noreferrer">Pulsar Audio</a>
+        <a href="https://darkangle4022211-cpu.github.io/pulserelease/" target="_blank" rel="noopener noreferrer">PulseRelease</a>
         <a href="https://github.com/darkangle4022211-cpu/hyperdrain" target="_blank" rel="noopener noreferrer">Source</a>
         <a href="https://github.com/darkangle4022211-cpu/hyperdrain/releases" target="_blank" rel="noopener noreferrer">Releases</a>
-        <a href="#reviews">Reviews</a>
         <a href="mailto:hamza.zafar4022211@gmail.com">hamza.zafar4022211@gmail.com</a>
       </div>
     </div>
